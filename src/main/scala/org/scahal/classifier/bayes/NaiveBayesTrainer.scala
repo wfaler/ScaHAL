@@ -13,12 +13,7 @@ import org.scahal.classifier.{FeatureMatrix, Event}
 
 object NaiveBayesTrainer {
 
-  def train(events: Seq[Event]): Map[String, FeatureMatrix] = train(Map[String, FeatureMatrix](), events)
+  def train(rawModel: Map[String, FeatureMatrix]): Unit = {
 
-  def train(model: Map[String, FeatureMatrix], events: Seq[Event]): Map[String, FeatureMatrix] = events.foldLeft(model){train(_,_)}
-  
-  def train(model: Map[String, FeatureMatrix], event: Event): Map[String, FeatureMatrix] = model.get(event.outcome) match{
-        case None => model ++ Map(event.outcome -> FeatureMatrix(event.features))
-        case Some(matrix) => (model - event.outcome) ++ Map(event.outcome -> matrix(event.features))
-      }
+  }
 }

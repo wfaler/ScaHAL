@@ -11,11 +11,11 @@ trait Feature {
   def name: String
 }
 
-case class CategoricalFeature[T](name: String, category: T)
+case class CategoricalFeature[T](name: String, category: T) extends Feature
 
-case class ContinuousFeature(name: String, value: BigDecimal)
+case class ContinuousFeature(name: String, value: BigDecimal) extends Feature
 
-case class BagOfWordsFeature(name: String, count: Long)
+case class BagOfWordsFeature(name: String, count: Long) extends Feature
 
 
 case class Outcome(label: String, probability: Double)
