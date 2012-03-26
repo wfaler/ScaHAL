@@ -1,6 +1,6 @@
 package org.scahal.classifier.bayes
 
-import org.scahal.classifier.{FeatureMatrix, Event}
+import org.scahal.classifier.{Classifier, FeatureMatrix, Event}
 
 
 /**
@@ -13,7 +13,7 @@ import org.scahal.classifier.{FeatureMatrix, Event}
 
 object NaiveBayesTrainer {
 
-  def train(rawModel: Map[String, FeatureMatrix]): Unit = {
-
+  def train(model: Map[String, FeatureMatrix]): Classifier = {
+    null
   }
 }
