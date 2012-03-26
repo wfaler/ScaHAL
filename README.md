@@ -1,4 +1,4 @@
-# ScaHAL, a machine learning and Artificial Intelligence library for Scala
+# ScaHAL, a machine learning and AI toolkit for Scala
 Work in progress, todo list includes:
 
 	* Naive Bayes classifier
