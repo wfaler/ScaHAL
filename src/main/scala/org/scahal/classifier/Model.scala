@@ -9,7 +9,10 @@ package org.scahal.classifier
  */
 sealed trait Feature {
   def name: String
+  def featureColumn = FeatureColumn(name, this.getClass)
 }
+
+case class FeatureColumn(name: String, cls: Class[ _ <: Feature])
 
 case class CategoricalFeature[T](name: String, category: T) extends Feature
 

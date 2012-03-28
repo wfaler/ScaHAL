@@ -12,16 +12,14 @@ case class FeatureMatrix(columns: Set[FeatureColumn], rows: Seq[Seq[Feature]]) {
 
   def apply(features: Seq[Feature]): FeatureMatrix = {
     FeatureMatrix(features.foldLeft(columns)((cols, feature) => {
-      if(cols.contains(FeatureColumn(feature.name, feature.getClass))) cols
+      if(cols.contains(feature.featureColumn)) cols
       else if(cols.exists(f => f.name == feature.name))
         throw new IllegalStateException("Trying to add feature of class " + feature.getClass.getName + ", but feature precedent has been set to class of " + cols.find(f => f.name == feature.name).get.getClass.getName)
-      else cols + FeatureColumn(feature.name, feature.getClass)
+      else cols + feature.featureColumn
     }), rows ++ List(features))
   }
 
 }
-
-case class FeatureColumn(name: String, cls: Class[ _ <: Feature])
 
 object FeatureMatrix{
   def apply(features: Seq[Feature]): FeatureMatrix = FeatureMatrix(features.map(f => FeatureColumn(f.name, f.getClass)).toSet, List(features))
