@@ -24,4 +24,3 @@ case class Outcome(label: String, confidence: Double)
 
 case class Event(outcome: String, features: Seq[Feature])
 
-

@@ -35,5 +35,3 @@ object ModelBuilder{
         case Some(matrix) => (model - event.outcome) ++ Map(event.outcome -> matrix(event.features))
       }
 }
-
-

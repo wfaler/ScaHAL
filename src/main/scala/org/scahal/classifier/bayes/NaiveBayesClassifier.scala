@@ -1,6 +1,6 @@
 package org.scahal.classifier.bayes
 
-import org.scahal.classifier.{Feature, Classifier, FeatureMatrix, Event}
+import org.scahal.classifier._
 
 
 /**
@@ -12,8 +12,10 @@ import org.scahal.classifier.{Feature, Classifier, FeatureMatrix, Event}
  */
 
 object NaiveBayesClassifier {
+  
+  def apply(events: List[Event]) = apply(ModelBuilder(events))
 
-  def apply(model: Map[String, FeatureMatrix]): Classifier = {
+  def apply(model: Map[String, FeatureMatrix]): Seq[Feature] => List[Outcome] = {
     model.keys.flatMap(key => {
       model(key).columns.flatMap(featureColumn => {
 
@@ -21,8 +23,4 @@ object NaiveBayesClassifier {
     })
     null
   }
-}
-
-class NaiveBayesClassifier extends Classifier{
-  def classify(features: Seq[Feature]) = null
 }
