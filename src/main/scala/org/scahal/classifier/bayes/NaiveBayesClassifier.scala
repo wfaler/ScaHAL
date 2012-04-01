@@ -2,16 +2,6 @@ package org.scahal.classifier.bayes
 
 import org.scahal.classifier._
 import com.recursivity.math._
-import collection.mutable.HashMap
-
-
-/**
- * Created by IntelliJ IDEA.
- * User: wfaler
- * Date: 24/03/2012
- * Time: 19:49
- * To change this template use File | Settings | File Templates.
- */
 
 object NaiveBayesClassifier {
   
@@ -66,14 +56,11 @@ case class NaiveBayesClassifier(outcomes: Map[String, Int], outcomeProbabilities
   def classify(features: Seq[Feature]): List[Outcome] = {
     val outcomeResults = outcomes.foldLeft(List[Outcome]())((results, entry) => {
       results ++ List(Outcome(entry._1, columns.foldLeft(outcomeProbabilities(entry._1))((lastResult, column) => {
-       featureCount.get((entry._1, column)) match{
-         case None => lastResult
-         case Some(featuresMap) => {
-          featuresMap.get(features.find(_.featureColumn == column).getOrElse(NonFeature)).map(value => {
-            lastResult * (dec(value) / dec(outcomes(entry._1)))
-          }).getOrElse(lastResult)
-         }
-       }
+       featureCount.get((entry._1, column)).map(featuresMap => {
+         featuresMap.get(features.find(_.featureColumn == column).getOrElse(NonFeature)).map(value => {
+           lastResult * (dec(value) / dec(outcomes(entry._1)))
+         }).getOrElse(lastResult)
+       }).getOrElse(lastResult)
       })))
     })
 
