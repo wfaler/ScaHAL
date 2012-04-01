@@ -58,12 +58,11 @@ case class NaiveBayesClassifier(outcomes: Map[String, Int], outcomeProbabilities
       results ++ List(Outcome(entry._1, columns.foldLeft(outcomeProbabilities(entry._1))((lastResult, column) => {
        featureCount.get((entry._1, column)).map(featuresMap => {
          featuresMap.get(features.find(_.featureColumn == column).getOrElse(NonFeature)).map(value => {
-           lastResult * (dec(value) / dec(outcomes(entry._1)))
+           lastResult * (dec(value) / dec(outcomes(entry._1) + 1))
          }).getOrElse(lastResult)
        }).getOrElse(lastResult)
       })))
     })
-
     val total = outcomeResults.foldLeft(dec(0))(_+_.confidence)
     outcomeResults.map(o => Outcome(o.label, o.confidence / total)).sortWith(_.confidence>_.confidence)
   }

@@ -29,10 +29,11 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val function = NaiveBayesClassifier(events)
 
     val outcomes = function(toClassify)
+    println(outcomes)
     (outcomes(0).label must be_==("no")) and
-    (outcomes(0).confidence must be_>(dec(0.82))) and
+    (outcomes(0).confidence must be_>(dec(0.78))) and
     (outcomes(1).label must be_==("yes")) and
-    (outcomes(1).confidence must be_<(dec(0.18)))
+    (outcomes(1).confidence must be_<(dec(0.22)))
   }
 
   def failProbsValidation = {
