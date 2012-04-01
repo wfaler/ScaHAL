@@ -23,7 +23,6 @@ class FeatureMatrixSpec extends Specification{ def is =
     val matrix = FeatureMatrix(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "world")))
     val result = matrix(List(CategoricalFeature("1", "howdy"), CategoricalFeature("3", "person")))
 
-    println(result.columns)
     (result.columns must have size(3)) and
     (result.rows must have size(2)) and
     (result.columns must contain(FeatureColumn("1", classOf[CategoricalFeature[String]]))) and
