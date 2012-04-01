@@ -17,6 +17,9 @@ class FeatureMatrixSpec extends Specification{ def is =
     "Add columns and rows as expected" ! happyPath^
     "Throw an Exception if row column is not of expected type" ! wrongColumn^
     "Train an outcomes model correctly" ! trainModelWithOutcomes^
+    "summarize all features of a matrix correctly" ! pending^
+    "summarize all features of a model correctly" ! pending^
+    "create a laplace smoothed map correctly" ! pending^
     end
   
   def happyPath = {

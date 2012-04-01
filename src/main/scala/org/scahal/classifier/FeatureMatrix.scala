@@ -9,7 +9,6 @@ package org.scahal.classifier
  */
 
 case class FeatureMatrix(columns: Set[FeatureColumn], rows: Seq[Seq[Feature]]) {
-
   def apply(features: Seq[Feature]): FeatureMatrix = {
     FeatureMatrix(features.foldLeft(columns)((cols, feature) => {
       if(cols.contains(feature.featureColumn)) cols
@@ -18,12 +17,41 @@ case class FeatureMatrix(columns: Set[FeatureColumn], rows: Seq[Seq[Feature]]) {
       else cols + feature.featureColumn
     }), rows ++ List(features))
   }
-
+         
+  def allFeatures(): Map[FeatureColumn, Set[Feature]] = {
+    columns.filter(_.cls == classOf[CategoricalFeature[_]]).foldLeft(Map[FeatureColumn, Set[Feature]]())((map, column) => {
+      map + (column -> rows.flatMap(seq => {
+              seq.find(_.featureColumn == column).map(f => f)
+            }).toSet)
+    })
+  }
 }
 
 object FeatureMatrix{
   def apply(features: Seq[Feature]): FeatureMatrix = FeatureMatrix(features.map(f => FeatureColumn(f.name, f.getClass)).toSet, List(features))
 }
+
+object AllFeatures{
+  def apply(model: Map[String, FeatureMatrix]): Map[FeatureColumn, Set[Feature]] = {
+    model.foldLeft(Map[FeatureColumn, Set[Feature]]())((map, tuple) => {
+      tuple._2.allFeatures().foldLeft(map)((featureMap, entries) => {
+        featureMap.get(entries._1).map(set => featureMap.-(entries._1).+(entries._1 -> (set ++ entries._2))).getOrElse(featureMap + (entries._1 -> entries._2))
+      })
+    })
+  }
+}
+
+object LaplaceInitialMap{
+  def apply(model: Map[String, FeatureMatrix]): Map[(String, FeatureColumn), Map[Feature, Int]] = {
+    val allFeatures = AllFeatures(model)
+    model.foldLeft(Map[(String, FeatureColumn), Map[Feature, Int]]())((map, model) => {
+       allFeatures.foldLeft(map)((in, feature) => {
+         in + ((model._1, feature._1) -> feature._2.foldLeft(Map[Feature, Int]())((featureMap, feature) => featureMap + (feature -> 1)))
+       })
+    })
+  }
+}
+
 
 object ModelBuilder{
   def apply(events: Seq[Event]): Map[String, FeatureMatrix] = apply(Map[String, FeatureMatrix](), events)
