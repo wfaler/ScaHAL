@@ -30,8 +30,9 @@ object ModelBuilder{
 
   def apply(model: Map[String, FeatureMatrix], events: Seq[Event]): Map[String, FeatureMatrix] = events.foldLeft(model){ModelBuilder(_,_)}
 
-  def apply(model: Map[String, FeatureMatrix], event: Event): Map[String, FeatureMatrix] = model.get(event.outcome) match{
-        case None => model ++ Map(event.outcome -> FeatureMatrix(event.features))
-        case Some(matrix) => (model - event.outcome) ++ Map(event.outcome -> matrix(event.features))
-      }
+  def apply(model: Map[String, FeatureMatrix], event: Event): Map[String, FeatureMatrix] =
+    model.get(event.outcome).map(matrix => {
+      (model - event.outcome) ++ Map(event.outcome -> matrix(event.features))
+    }).getOrElse(model ++ Map(event.outcome -> FeatureMatrix(event.features)))
+
 }
