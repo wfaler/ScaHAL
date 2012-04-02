@@ -12,7 +12,7 @@ object NaiveBayesClassifier {
     val columns = model.keys.flatMap(model(_).columns).toSet
     val outcomes = model.foldLeft((Map[String, Int]()))((map, outcomeMatrix) => map + (outcomeMatrix._1 -> outcomeMatrix._2.rows.size))
     val classifier = NaiveBayesClassifier(outcomes, outcomeProbs(outcomes, outcomeProbabilities),
-      columns, featureCounts(allFeatures(model, columns), LaplaceInitialMap(model)))
+      columns, featureCounts(model, columns, LaplaceInitialMap(model)))
     classifier.classify(_)
   }
 
@@ -25,27 +25,29 @@ object NaiveBayesClassifier {
   }
 
 
-  private def allFeatures(model: Map[String, FeatureMatrix], columns: Set[FeatureColumn]) = model.keys.flatMap(key => {
-            columns.flatMap(column => List((key, column, model(key).rows.flatMap(_.find(_.featureColumn == column)))))}).toList
+  private def featureCounts(model: Map[String, FeatureMatrix], columns: Set[FeatureColumn], laplaceMap: Map[String,Map[FeatureColumn,Map[org.scahal.classifier.Feature,Int]]]): Map[String,Map[FeatureColumn,Map[Feature,Int]]] = {
+    laplaceMap.map(outcomeEntry => {
+       (outcomeEntry._1, outcomeEntry._2.map(columnEntry => {
+         val columnFeatures = model(outcomeEntry._1).rows.foldLeft(List[Feature]())((features, row) => {
+           features ++ row.filter(_.featureColumn == columnEntry._1)
+         })
+         (columnEntry._1, columnEntry._2.map(featureEntry => {
+                    (featureEntry._1, featureEntry._2 + columnFeatures.filter(_==featureEntry._1).size)
+         }))
+       }))
+    })
+  }
 
-  private def featureCounts(allFeatures: List[(String, FeatureColumn, Seq[Feature])], laplaceMap: Map[(String, FeatureColumn), Map[Feature, Int]]): Map[(String, FeatureColumn), Map[Feature, Int]] =
-    allFeatures.foldLeft(laplaceMap)((map, entry) => {
-        entry._3.foldLeft(map)((map, feature) => {
-          map.get((entry._1, entry._2)).map(featureMap => {
-            (map.-((entry._1, entry._2))).+((entry._1, entry._2) -> (featureMap.-(feature).+(feature -> (featureMap.get(feature).getOrElse(0) + 1))))
-          }).getOrElse(map + ((entry._1, entry._2) -> Map(feature -> 1)))
-        })
-      })
 
 }
 
 case class NaiveBayesClassifier(outcomes: Map[String, Int], outcomeProbabilities: Map[String, BigDecimal], columns: Set[FeatureColumn],
-                                featureCount: Map[(String, FeatureColumn), Map[Feature, Int]]){
+                                featureCount: Map[String,Map[FeatureColumn,Map[Feature,Int]]]){
   def classify(features: Seq[Feature]): List[Outcome] = {
     val outcomeResults = outcomes.foldLeft(List[Outcome]())((results, entry) => {
       val laplaceSmoothingCoefficient = outcomes.keys.size  // based on the number of classes
       results ++ List(Outcome(entry._1, columns.foldLeft(outcomeProbabilities(entry._1))((lastResult, column) => {
-       featureCount.get((entry._1, column)).map(featuresMap => {
+       featureCount.get((entry._1)).get.get(column).map(featuresMap => {
          featuresMap.get(features.find(_.featureColumn == column).getOrElse(NonFeature)).map(value => {
            lastResult * (dec(value) / dec(outcomes(entry._1) + laplaceSmoothingCoefficient))
          }).getOrElse(lastResult)

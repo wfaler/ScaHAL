@@ -50,9 +50,12 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val function = NaiveBayesClassifier(events)
 
     val outcomes = function(toClassify)
-    println("zeroDiv " + outcomes)
 
-    outcomes must have size(2)
+    (outcomes must have size(2)) and
+    (outcomes(0).label must be_==("yes")) and
+    (outcomes(0).confidence must be_>(dec(0.7))) and
+    (outcomes(1).label must be_==("no")) and
+    (outcomes(1).confidence must be_<(dec(0.3)))
   }
 
   def bagOfWords = {
@@ -63,8 +66,11 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val toClassify = List(BagOfWordsFeature("spam"), BagOfWordsFeature("puppies"), BagOfWordsFeature("cats"), BagOfWordsFeature("unspecified"))
 
     val outcomes = function(toClassify)
-    println(outcomes)
-    outcomes must have size(2)
+    (outcomes must have size(2)) and
+    (outcomes(0).label must be_==("ham")) and
+    (outcomes(0).confidence must be_>(dec(0.8))) and
+    (outcomes(1).label must be_==("spam")) and
+    (outcomes(1).confidence must be_<(dec(0.2)))
   }
 
   def events = Source.fromInputStream(this.getClass.getResourceAsStream("/tennis.txt"), "UTF-8").getLines().map(line => {

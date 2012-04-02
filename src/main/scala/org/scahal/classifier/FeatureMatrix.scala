@@ -42,12 +42,12 @@ object AllFeatures{
 }
 
 object LaplaceInitialMap{
-  def apply(model: Map[String, FeatureMatrix]): Map[(String, FeatureColumn), Map[Feature, Int]] = {
+  def apply(model: Map[String, FeatureMatrix]): Map[String, Map[FeatureColumn, Map[Feature, Int]]] = {
     val allFeatures = AllFeatures(model)
-    model.foldLeft(Map[(String, FeatureColumn), Map[Feature, Int]]())((map, model) => {
-       allFeatures.foldLeft(map)((in, feature) => {
-         in + ((model._1, feature._1) -> feature._2.foldLeft(Map[Feature, Int]())((featureMap, feature) => featureMap + (feature -> 1)))
-       })
+    model.foldLeft(Map[String, Map[FeatureColumn, Map[Feature, Int]]]())((map, model) => {
+       map + (model._1 -> allFeatures.foldLeft(Map[FeatureColumn, Map[Feature, Int]]())((in, feature) => {
+         in + (feature._1 -> feature._2.foldLeft(Map[Feature, Int]())((featureMap, feature) => featureMap + (feature -> 1)))
+       }))
     })
   }
 }
