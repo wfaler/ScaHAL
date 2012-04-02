@@ -18,7 +18,7 @@ case class FeatureMatrix(columns: Set[FeatureColumn], rows: Seq[Seq[Feature]]) {
     }), rows ++ List(features))
   }
          
-  def allFeatures(): Map[FeatureColumn, Set[Feature]] = {
+  def categoricalFeatures(): Map[FeatureColumn, Set[Feature]] = {
     columns.filter(_.cls == classOf[CategoricalFeature[_]]).foldLeft(Map[FeatureColumn, Set[Feature]]())((map, column) => {
       map + (column -> rows.flatMap(seq => {
               seq.find(_.featureColumn == column).map(f => f)
@@ -34,7 +34,7 @@ object FeatureMatrix{
 object AllFeatures{
   def apply(model: Map[String, FeatureMatrix]): Map[FeatureColumn, Set[Feature]] = {
     model.foldLeft(Map[FeatureColumn, Set[Feature]]())((map, tuple) => {
-      tuple._2.allFeatures().foldLeft(map)((featureMap, entries) => {
+      tuple._2.categoricalFeatures().foldLeft(map)((featureMap, entries) => {
         featureMap.get(entries._1).map(set => featureMap.-(entries._1).+(entries._1 -> (set ++ entries._2))).getOrElse(featureMap + (entries._1 -> entries._2))
       })
     })

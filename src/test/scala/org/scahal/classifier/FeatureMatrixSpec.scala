@@ -17,7 +17,7 @@ class FeatureMatrixSpec extends Specification{ def is =
     "Add columns and rows as expected" ! happyPath^
     "Throw an Exception if row column is not of expected type" ! wrongColumn^
     "Train an outcomes model correctly" ! trainModelWithOutcomes^
-    "summarize all categorical features of a matrix correctly" ! pending^
+    "summarize all categorical features of a matrix correctly" ! featuresInMatrix^
     "summarize all categorical features of a model correctly" ! pending^
     "create a laplace smoothed map correctly" ! pending^
     end
@@ -54,6 +54,27 @@ class FeatureMatrixSpec extends Specification{ def is =
     (outcomes("failure").rows must contain(input(3).features)) and
     (outcomes("success").rows must contain(input(0).features)) and
     (outcomes("success").rows must contain(input(1).features))
+  }
+
+  def featuresInMatrix = {
+    val matrix = FeatureMatrix(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "world")))
+    val allFeatures = matrix(List(CategoricalFeature("1", "howdy"), CategoricalFeature("3", "person"))).categoricalFeatures()
+
+    (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have size(2)) and
+    (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "hello"))) and
+    (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "howdy"))) and
+    (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have size(1)) and
+    (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "world"))) and
+    (allFeatures(CategoricalFeature("3", "hello").featureColumn) must have size(1)) and
+    (allFeatures(CategoricalFeature("3", "hello").featureColumn) must have contain(CategoricalFeature("3", "person")))
+  }
+
+  def allFeatures = {
+    failure
+  }
+
+  def laplaceSmoothing = {
+    failure
   }
 
 }

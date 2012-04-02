@@ -19,7 +19,8 @@ class NaiveBayesClassifierSpec extends Specification { def is =
       "Throw an exception if training data does not contain all probability labels" ! failProbsTrainingData^
       "Smooth out feature values to avoid zero-division" ! zeroDivisionSmoothing^
       "Smooth out lacking feature categories to avoid zero division" ! bagOfWords^
-      "Be able to work with continuous (numeric) features" ! pending^
+      "Be able to work with continuous (numeric) features only " ! pending^
+      "Be able to work with mixed continuous and categorical features " ! pending^
       end
 
   def happyPath = {

@@ -12,7 +12,7 @@ object NaiveBayesClassifier {
     val columns = model.keys.flatMap(model(_).columns).toSet
     val outcomes = model.foldLeft((Map[String, Int]()))((map, outcomeMatrix) => map + (outcomeMatrix._1 -> outcomeMatrix._2.rows.size))
     val classifier = NaiveBayesClassifier(outcomes, outcomeProbs(outcomes, outcomeProbabilities),
-      columns, featureCounts(model, columns, LaplaceInitialMap(model)))
+      columns, featureCounts(model, LaplaceInitialMap(model)))
     classifier.classify(_)
   }
 
@@ -25,7 +25,7 @@ object NaiveBayesClassifier {
   }
 
 
-  private def featureCounts(model: Map[String, FeatureMatrix], columns: Set[FeatureColumn], laplaceMap: Map[String,Map[FeatureColumn,Map[org.scahal.classifier.Feature,Int]]]): Map[String,Map[FeatureColumn,Map[Feature,Int]]] = {
+  private def featureCounts(model: Map[String, FeatureMatrix], laplaceMap: Map[String,Map[FeatureColumn,Map[org.scahal.classifier.Feature,Int]]]): Map[String,Map[FeatureColumn,Map[Feature,Int]]] = {
     laplaceMap.map(outcomeEntry => {
        (outcomeEntry._1, outcomeEntry._2.map(columnEntry => {
          val columnFeatures = model(outcomeEntry._1).rows.foldLeft(List[Feature]())((features, row) => {
