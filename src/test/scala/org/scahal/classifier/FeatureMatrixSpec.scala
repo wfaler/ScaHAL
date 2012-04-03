@@ -18,8 +18,8 @@ class FeatureMatrixSpec extends Specification{ def is =
     "Throw an Exception if row column is not of expected type" ! wrongColumn^
     "Train an outcomes model correctly" ! trainModelWithOutcomes^
     "summarize all categorical features of a matrix correctly" ! featuresInMatrix^
-    "summarize all categorical features of a model correctly" ! pending^
-    "create a laplace smoothed map correctly" ! pending^
+    "summarize all categorical features of a model correctly" ! allFeatures^
+    "create a laplace smoothed map correctly" ! laplaceSmoothing^
     end
   
   def happyPath = {
@@ -70,11 +70,46 @@ class FeatureMatrixSpec extends Specification{ def is =
   }
 
   def allFeatures = {
-    failure
+    val matrix = FeatureMatrix(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "world"))).
+      apply(List(CategoricalFeature("1", "howdy"), CategoricalFeature("3", "person")))
+
+    val matrix2 = FeatureMatrix(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "planet"))).
+      apply(List(CategoricalFeature("1", "howdy"), CategoricalFeature("4", "ogre")))
+    val model = Map("success" -> matrix, "failure" -> matrix2)
+
+    val allFeatures = AllFeatures(model)
+
+    (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have size(2)) and
+     (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "hello"))) and
+     (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "howdy"))) and
+     (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have size(2)) and
+     (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "world"))) and
+     (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "planet"))) and
+     (allFeatures(CategoricalFeature("3", "hello").featureColumn) must have size(1)) and
+     (allFeatures(CategoricalFeature("3", "hello").featureColumn) must have contain(CategoricalFeature("3", "person"))) and
+     (allFeatures(CategoricalFeature("4", "hello").featureColumn) must have size(1)) and
+     (allFeatures(CategoricalFeature("4", "hello").featureColumn) must have contain(CategoricalFeature("4", "ogre")))
   }
 
   def laplaceSmoothing = {
-    failure
+    val matrix = FeatureMatrix(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "world"))).
+      apply(List(CategoricalFeature("1", "howdy"), CategoricalFeature("3", "person")))
+
+    val matrix2 = FeatureMatrix(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "planet"))).
+      apply(List(CategoricalFeature("1", "howdy"), CategoricalFeature("4", "ogre")))
+    val model = Map("success" -> matrix, "failure" -> matrix2)
+
+    val smap  = LaplaceInitialMap(model)
+    val succ = smap("success")
+    val fail = smap("failure")
+
+    (succ.keySet must have size(4)) and
+    (fail.keySet must have size(4)) and
+    (succ(FeatureColumn("4", classOf[CategoricalFeature[_]])).get(CategoricalFeature("4", "ogre")).get must be_==(1)) and
+    (succ(FeatureColumn("1", classOf[CategoricalFeature[_]])).get(CategoricalFeature("1", "hello")).get must be_==(1)) and
+    (succ(FeatureColumn("1", classOf[CategoricalFeature[_]])).get(CategoricalFeature("1", "howdy")).get must be_==(1)) and
+    (succ(FeatureColumn("2", classOf[CategoricalFeature[_]])).get(CategoricalFeature("2", "world")).get must be_==(1)) and
+    (succ(FeatureColumn("2", classOf[CategoricalFeature[_]])).get(CategoricalFeature("2", "planet")).get must be_==(1))
   }
 
 }
