@@ -11,15 +11,15 @@ import com.recursivity.math._
  * To change this template use File | Settings | File Templates.
  */
 
-class GaussianProbabilitySpec extends Specification{ def is =
+class GaussianFunctionSpec extends Specification{ def is =
 
-  "The Gaussian probability should" ^
+  "The Gaussian Function should" ^
     p^
-      "be approximately 0.034 given a mean=73, stdDev=6.2 and value of 66" ! gaussianProb^
+      "be return approximately 0.034 given a mean=73, stdDev=6.2 and value of 66" ! gaussianProb^
   end
 
   def gaussianProb = {
-    GaussianProbability(73, 6.2, 66) must be_==(dec(0.03401870545760999))
+    GaussianFunction(73, 6.2, 66) must be_==(dec(0.03401870545760999))
   }
 
 }

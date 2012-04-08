@@ -11,7 +11,7 @@ import com.recursivity.math._
  * To change this template use File | Settings | File Templates.
  */
 
-object GaussianProbability {
+object GaussianFunction {
   def apply(mean: BigDecimal, stdDev: BigDecimal, value: BigDecimal): BigDecimal = {
     (1/(sqrt(2*Pi)*stdDev.toDouble))*(pow(E, (-1 * pow(value.toDouble - mean.toDouble, 2)/(2*pow(stdDev.toDouble,2)))))
   }
