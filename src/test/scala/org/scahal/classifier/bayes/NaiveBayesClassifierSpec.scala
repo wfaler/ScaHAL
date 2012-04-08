@@ -4,7 +4,7 @@ import io.Source
 import org.specs2.Specification
 
 import com.recursivity.math._
-import org.scahal.classifier.{BagOfWordsFeature, CategoricalFeature, Event}
+import org.scahal.classifier._
 
 /**
  * http://www.slideshare.net/aorriols/lecture10-nave-bayes
@@ -19,8 +19,8 @@ class NaiveBayesClassifierSpec extends Specification { def is =
       "Throw an exception if training data does not contain all probability labels" ! failProbsTrainingData^
       "Smooth out feature values to avoid zero-division" ! zeroDivisionSmoothing^
       "Smooth out lacking feature categories to avoid zero division" ! bagOfWords^
-      "Give correct probabilities when no features are given" ! pending^
-      "Be able to work with continuous (numeric) features only " ! pending^
+      "Give correct probabilities when no features are given" ! noFeatures^
+      "Be able to work with continuous (numeric) features only " ! numericOnly^
       "Be able to work with mixed continuous and categorical features " ! pending^
       end
 
@@ -74,6 +74,34 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     (outcomes(1).label must be_==("spam")) and
     (outcomes(1).confidence must be_<(dec(0.2)))
   }
+
+  def noFeatures = {
+    val function = NaiveBayesClassifier(events)
+    val outcomes = function(Seq[Feature]())
+    (outcomes must have size(2)) and
+    (outcomes(0).label must be_==("yes")) and
+    (outcomes(0).confidence must be_>(dec(0.64))) and
+    (outcomes(1).label must be_==("no")) and
+    (outcomes(1).confidence must be_<(dec(0.36)))
+  }
+
+  def numericOnly = {
+    val function = NaiveBayesClassifier(numerical)
+    val outcomes = function(List(ContinuousFeature("height", 6), ContinuousFeature("weight", 130), ContinuousFeature("shoes", 8)))
+
+    (outcomes must have size(2)) and
+    (outcomes(0).label must be_==("female"))
+  }
+
+  def mixedFeatures = {
+    failure
+  }
+
+  def numerical = Source.fromInputStream(this.getClass.getResourceAsStream("/numerical.txt"), "UTF-8").getLines().map(line => {
+          val splits = line.split(",")
+          Event(splits(0), List(ContinuousFeature("height", splits(1)), ContinuousFeature("weight", splits(2)),
+            ContinuousFeature("shoes", splits(3))))
+        }).toList
 
   def events = Source.fromInputStream(this.getClass.getResourceAsStream("/tennis.txt"), "UTF-8").getLines().map(line => {
         val splits = line.split(",")
