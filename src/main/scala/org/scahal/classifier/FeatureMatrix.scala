@@ -18,15 +18,16 @@ case class FeatureMatrix(columns: Set[FeatureColumn], rows: Seq[Seq[Feature]]) {
     }), rows ++ List(features))
   }
          
-  def categoricalFeatures(): Map[FeatureColumn, Set[Feature]] = features(classOf[CategoricalFeature[_]]).map(kv => (kv._1, kv._2.toSet))
+  def categoricalFeatures(): Map[FeatureColumn, Set[Feature]] =
+    features(classOf[CategoricalFeature[_]]).map(kv => (kv._1, kv._2.toSet))
 
-  private def features(clazz: Class[_ <: Feature]): Map[FeatureColumn, List[Feature]] = {
+  private def features(clazz: Class[_ <: Feature]): Map[FeatureColumn, List[Feature]] =
     columns.filter(_.cls == clazz).foldLeft(Map[FeatureColumn, List[Feature]]())((map, column) => {
       map + (column -> rows.flatMap(seq => {
               seq.find(_.featureColumn == column).map(f => f)
             }).toList)
     })
-  }
+
 
   def continuousFeatures(): Map[FeatureColumn, List[Feature]] = features(classOf[ContinuousFeature])
 }
