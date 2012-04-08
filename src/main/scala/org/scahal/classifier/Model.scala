@@ -30,3 +30,5 @@ object BagOfWordsFeature{
   def apply(word: String): Feature = CategoricalFeature(word, word)
 }
 
+case class GaussianDistribution(mean: BigDecimal, standardDeviation: BigDecimal)
+

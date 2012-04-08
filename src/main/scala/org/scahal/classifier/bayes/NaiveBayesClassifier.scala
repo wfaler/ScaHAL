@@ -2,6 +2,7 @@ package org.scahal.classifier.bayes
 
 import org.scahal.classifier._
 import com.recursivity.math._
+import com.recursivity.math.stats._
 
 object NaiveBayesClassifier {
   
@@ -24,23 +25,41 @@ object NaiveBayesClassifier {
 }
 
 case class NaiveBayesClassifier(outcomes: Map[String, Int], model: Map[String, FeatureMatrix], outcomeProbabilities: Map[String, BigDecimal]){
-  private val columns = model.keys.flatMap(model(_).columns).toSet
+  private val categoricalColumns = model.keys.flatMap(model(_).columns).toSet.filter(_.cls.isAssignableFrom(classOf[CategoricalFeature[_]]))
+  private val continuousColumns = model.keys.flatMap(model(_).columns).toSet.filter(_.cls.isAssignableFrom(classOf[ContinuousFeature]))
   private val featureCount = featureCounts(model)
+  private val continuousFeatures = gaussianModel(model)
 
   def classify(features: Seq[Feature]): List[Outcome] = {
     val outcomeResults = outcomes.foldLeft(List[Outcome]())((results, entry) => {
       val laplaceSmoothingCoefficient = outcomes.keys.size  // based on the number of classes
 
-      results ++ List(Outcome(entry._1, columns.foldLeft(outcomeProbabilities(entry._1))((lastResult, column) => {
+      results ++ List(Outcome(entry._1, categoricalColumns.foldLeft(outcomeProbabilities(entry._1))((lastResult, column) => {
        featureCount.get((entry._1)).get.get(column).map(featuresMap => {
          featuresMap.get(features.find(_.featureColumn == column).getOrElse(NonFeature)).map(value => {
            lastResult * (dec(value) / dec(outcomes(entry._1) + laplaceSmoothingCoefficient))
          }).getOrElse(lastResult)
        }).getOrElse(lastResult)
       })))
-    })
+    }).map(outcome => {
+      continuousColumns.foldLeft(outcome)((input, column) => {
+        val dist = continuousFeatures.get(input.label).map(_.get(column).get).getOrElse(throw new IllegalStateException("All Continuous Features must have mean and std dev values"))
+        val feature = features.find(_.featureColumn == column).getOrElse(throw new IllegalStateException(column.name + "has not value in feature set, cannot evaluate data with missing continuous values"))
+        val gaussianProb = GaussianProbability(dist.mean, dist.standardDeviation, feature.asInstanceOf[ContinuousFeature].value)
+        Outcome(outcome.label, outcome.confidence * gaussianProb)
+      })
+    })  // TODO: what if only continuous features
     val total = outcomeResults.foldLeft(dec(0))(_+_.confidence)
     outcomeResults.map(o => Outcome(o.label, o.confidence / total)).sortWith(_.confidence>_.confidence)
+  }
+
+  private def gaussianModel(model: Map[String, FeatureMatrix]): Map[String,Map[FeatureColumn, GaussianDistribution]] = {
+    model.map(values => {
+      (values._1, values._2.continuousFeatures().map(features => {
+        (features._1, GaussianDistribution(mean(features._2.map(_.asInstanceOf[ContinuousFeature].value)),
+          standardDeviation(features._2.map(_.asInstanceOf[ContinuousFeature].value))))
+      }))
+    })
   }
 
   private def featureCounts(model: Map[String, FeatureMatrix]): Map[String,Map[FeatureColumn,Map[Feature,Int]]] = {
