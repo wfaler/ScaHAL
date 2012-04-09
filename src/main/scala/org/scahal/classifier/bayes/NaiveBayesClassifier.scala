@@ -34,13 +34,13 @@ case class NaiveBayesClassifier(outcomes: Map[String, Int], model: Map[String, F
     val outcomeResults = outcomes.foldLeft(List[Outcome]())((results, entry) => {
       val laplaceSmoothingCoefficient = outcomes.keys.size  // based on the number of classes
 
-      results ++ List(Outcome(entry._1, categoricalColumns.foldLeft(outcomeProbabilities(entry._1))((lastResult, column) => {
+       Outcome(entry._1, categoricalColumns.foldLeft(outcomeProbabilities(entry._1))((lastResult, column) => {
        featureCount.get((entry._1)).get.get(column).map(featuresMap => {
          featuresMap.get(features.find(_.featureColumn == column).getOrElse(NonFeature)).map(value => {
            lastResult * (dec(value) / dec(outcomes(entry._1) + laplaceSmoothingCoefficient))
          }).getOrElse(lastResult)
        }).getOrElse(lastResult)
-      })))
+      })) :: results
     }).map(outcome => {
       continuousColumns.foldLeft(outcome)((input, column) => {
         val dist = continuousFeatures.get(input.label).map(_.apply(column)).getOrElse(throw new IllegalStateException("All Continuous Features must have mean and std dev values"))
