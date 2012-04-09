@@ -32,9 +32,9 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val function = NaiveBayesClassifier(events)
 
     val outcomes = function(toClassify)
-    (outcomes(0).label must be_==("no")) and
+    (outcomes(0).value must be_==("no")) and
     (outcomes(0).confidence must be_>(dec(0.73))) and
-    (outcomes(1).label must be_==("yes")) and
+    (outcomes(1).value must be_==("yes")) and
     (outcomes(1).confidence must be_<(dec(0.27)))
   }
 
@@ -55,9 +55,9 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val outcomes = function(toClassify)
 
     (outcomes must have size(2)) and
-    (outcomes(0).label must be_==("yes")) and
+    (outcomes(0).value must be_==("yes")) and
     (outcomes(0).confidence must be_>(dec(0.7))) and
-    (outcomes(1).label must be_==("no")) and
+    (outcomes(1).value must be_==("no")) and
     (outcomes(1).confidence must be_<(dec(0.3)))
   }
 
@@ -70,9 +70,9 @@ class NaiveBayesClassifierSpec extends Specification { def is =
 
     val outcomes = function(toClassify)
     (outcomes must have size(2)) and
-    (outcomes(0).label must be_==("ham")) and
+    (outcomes(0).value must be_==("ham")) and
     (outcomes(0).confidence must be_>(dec(0.8))) and
-    (outcomes(1).label must be_==("spam")) and
+    (outcomes(1).value must be_==("spam")) and
     (outcomes(1).confidence must be_<(dec(0.2)))
   }
 
@@ -80,9 +80,9 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val function = NaiveBayesClassifier(events)
     val outcomes = function(Seq[Feature]())
     (outcomes must have size(2)) and
-    (outcomes(0).label must be_==("yes")) and
+    (outcomes(0).value must be_==("yes")) and
     (outcomes(0).confidence must be_>(dec(0.64))) and
-    (outcomes(1).label must be_==("no")) and
+    (outcomes(1).value must be_==("no")) and
     (outcomes(1).confidence must be_<(dec(0.36)))
   }
 
@@ -91,7 +91,7 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val outcomes = function(List(ContinuousFeature("height", 6), ContinuousFeature("weight", 130), ContinuousFeature("shoes", 8)))
 
     (outcomes must have size(2)) and
-    (outcomes(0).label must be_==("female"))
+    (outcomes(0).value must be_==("female"))
   }
 
   def missingNumeric = {
@@ -107,9 +107,9 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val nonMixed = NaiveBayesClassifier(numerical)(List(ContinuousFeature("height", 6), ContinuousFeature("weight", 130), ContinuousFeature("shoes", 8)))
 
     (outcomes must have size(2)) and
-    (outcomes(0).label must be_==("female")) and
+    (outcomes(0).value must be_==("female")) and
     (nonMixed must have size(2)) and
-    (nonMixed(0).label must be_==("female")) and
+    (nonMixed(0).value must be_==("female")) and
     ((nonMixed(0).confidence) must be_>=(outcomes(0).confidence))
   }
 

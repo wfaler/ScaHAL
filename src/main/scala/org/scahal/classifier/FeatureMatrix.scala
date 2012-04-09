@@ -37,7 +37,7 @@ object FeatureMatrix{
 }
 
 object AllFeatures{
-  def apply(model: Map[String, FeatureMatrix]): Map[FeatureColumn, Set[Feature]] = {
+  def apply[T](model: Map[T, FeatureMatrix]): Map[FeatureColumn, Set[Feature]] = {
     model.foldLeft(Map[FeatureColumn, Set[Feature]]())((map, tuple) => {
       tuple._2.categoricalFeatures().foldLeft(map)((featureMap, entries) => {
         featureMap.get(entries._1).map(set => featureMap.-(entries._1).+(entries._1 -> (set ++ entries._2))).getOrElse(featureMap + (entries._1 -> entries._2))
@@ -47,9 +47,9 @@ object AllFeatures{
 }
 
 object LaplaceInitialMap{
-  def apply(model: Map[String, FeatureMatrix]): Map[String, Map[FeatureColumn, Map[Feature, Int]]] = {
+  def apply[T](model: Map[T, FeatureMatrix]): Map[T, Map[FeatureColumn, Map[Feature, Int]]] = {
     val allFeatures = AllFeatures(model)
-    model.foldLeft(Map[String, Map[FeatureColumn, Map[Feature, Int]]]())((map, model) => {
+    model.foldLeft(Map[T, Map[FeatureColumn, Map[Feature, Int]]]())((map, model) => {
        map + (model._1 -> allFeatures.foldLeft(Map[FeatureColumn, Map[Feature, Int]]())((in, feature) => {
          in + (feature._1 -> feature._2.foldLeft(Map[Feature, Int]())((featureMap, feature) => featureMap + (feature -> 1)))
        }))
@@ -59,11 +59,11 @@ object LaplaceInitialMap{
 
 
 object ModelBuilder{
-  def apply(events: Seq[Event]): Map[String, FeatureMatrix] = apply(Map[String, FeatureMatrix](), events)
+  def apply[T](events: Seq[Event[T]]): Map[T, FeatureMatrix] = apply(Map[T, FeatureMatrix](), events)
 
-  def apply(model: Map[String, FeatureMatrix], events: Seq[Event]): Map[String, FeatureMatrix] = events.foldLeft(model){ModelBuilder(_,_)}
+  def apply[T](model: Map[T, FeatureMatrix], events: Seq[Event[T]]): Map[T, FeatureMatrix] = events.foldLeft(model){ModelBuilder(_,_)}
 
-  def apply(model: Map[String, FeatureMatrix], event: Event): Map[String, FeatureMatrix] =
+  def apply[T](model: Map[T, FeatureMatrix], event: Event[T]): Map[T, FeatureMatrix] =
     model.get(event.outcome).map(matrix => {
       (model - event.outcome) ++ Map(event.outcome -> matrix(event.features))
     }).getOrElse(model ++ Map(event.outcome -> FeatureMatrix(event.features)))

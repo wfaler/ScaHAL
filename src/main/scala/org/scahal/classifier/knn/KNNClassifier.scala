@@ -9,10 +9,10 @@ import scala.math._
  * K Nearest Neighbour Classifier
  */
 
-case class KNNClassifier(events: Seq[Event]) {
+case class KNNClassifier[T](events: Seq[Event[T]]) {
 
-  def apply(features: Seq[Feature], kSize: Int): List[Outcome] = {
-    val distances = events.foldLeft(List[(BigDecimal, Event)]())((input, event) => {
+  def apply(features: Seq[Feature], kSize: Int): List[Outcome[T]] = {
+    val distances = events.foldLeft(List[(BigDecimal, Event[T])]())((input, event) => {
       val dist = event.features.foldLeft(dec(0))((distance, feature) => {
         feature match{
           case ContinuousFeature(name,value) => distance + pow(value.toDouble - features.
@@ -31,7 +31,7 @@ case class KNNClassifier(events: Seq[Event]) {
       (dec(sqrt(totalDistance.doubleValue())), event) :: input
     }).sortWith(_._1 < _._1)
 
-    List.range(0,kSize).foldLeft(Map[String, Int]())((map, index) => {
+    List.range(0,kSize).foldLeft(Map[T, Int]())((map, index) => {
       val outcome = distances(index)._2.outcome
       map.get(outcome).map(int => {
         map.updated(outcome, int + 1)

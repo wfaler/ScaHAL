@@ -9,9 +9,9 @@ package org.scahal.classifier
  */
 case class FeatureColumn(name: String, cls: Class[ _ <: Feature])
 
-case class Outcome(label: String, confidence: BigDecimal)
+case class Outcome[T](value: T, confidence: BigDecimal)
 
-case class Event(outcome: String, features: Seq[Feature])
+case class Event[T](outcome: T, features: Seq[Feature])
 
 sealed trait Feature {
   def name: String
