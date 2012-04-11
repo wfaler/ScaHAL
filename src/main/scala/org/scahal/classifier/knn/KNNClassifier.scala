@@ -6,29 +6,28 @@ import scala.math._
 
 
 /**
- * K Nearest Neighbour Classifier
+ * k Nearest Neighbour Classifier
  */
 
 case class KNNClassifier[T](events: Seq[Event[T]]) {
 
   def apply(features: Seq[Feature], kSize: Int): List[Outcome[T]] = {
     val distances = events.foldLeft(List[(BigDecimal, Event[T])]())((input, event) => {
-      val dist = event.features.foldLeft(dec(0))((distance, feature) => {
+      val pairs = event.features.map(feature => {
         feature match{
-          case ContinuousFeature(name,value) => distance + pow(value.toDouble - features.
-            find(_.featureColumn == feature.featureColumn).map(f => f.asInstanceOf[ContinuousFeature].value.doubleValue()).getOrElse(0d), 2d)
-          case CategoricalFeature(name, value) => distance + features.find(_ == feature).map(f => dec(1)).getOrElse(dec(0))
+          case ContinuousFeature(name,value) => (value, features.
+            find(_.featureColumn == feature.featureColumn).map(f => f.asInstanceOf[ContinuousFeature].value).getOrElse(dec(0d)))
+          case CategoricalFeature(name, value) => (dec(1), features.find(_ == feature).map(f => dec(1)).getOrElse(dec(0)))
+          case _ => throw new IllegalArgumentException("kNN classifier can only deal with Continuous and Categorical Features")
+        }
+      }) ++ features.filterNot(f => event.features.exists(_.featureColumn==f.featureColumn)).map(feature => {
+        feature match{
+          case ContinuousFeature(name,value) => (value, dec(0))
+          case CategoricalFeature(name, value) => (dec(1), dec(0))
           case _ => throw new IllegalArgumentException("kNN classifier can only deal with Continuous and Categorical Features")
         }
       })
-      val totalDistance = features.filterNot(f => event.features.exists(_.featureColumn==f.featureColumn)).foldLeft(dist)((distance, feature) => {
-        feature match{
-          case ContinuousFeature(name,value) => distance + pow(value.toDouble, 2d)
-          case CategoricalFeature(name, value) => distance + 1
-          case _ => throw new IllegalArgumentException("kNN classifier can only deal with Continuous and Categorical Features")
-        }
-      })
-      (dec(sqrt(totalDistance.doubleValue())), event) :: input
+      (EuclidianDistance(pairs), event) :: input
     }).sortWith(_._1 < _._1)
 
     List.range(0,kSize).foldLeft(Map[T, Int]())((map, index) => {
