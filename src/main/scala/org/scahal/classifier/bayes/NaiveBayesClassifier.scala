@@ -45,7 +45,7 @@ case class NaiveBayesClassifier[T](outcomes: Map[T, Int], model: Map[T, FeatureM
       continuousColumns.foldLeft(outcome)((input, column) => {
         val dist = continuousFeatures.get(input.value).map(_.apply(column)).getOrElse(throw new IllegalStateException("All Continuous Features must have mean and std dev values"))
         val feature = features.find(_.featureColumn == column).getOrElse(throw new IllegalStateException(column.name + "has not value in feature set, cannot evaluate data with missing continuous values"))
-        val gaussianProb = GaussianFunction(dist.mean, dist.standardDeviation, feature.asInstanceOf[ContinuousFeature].value)
+        val gaussianProb = gaussian(dist.mean, dist.standardDeviation, feature.asInstanceOf[ContinuousFeature].value)
         Outcome(outcome.value, outcome.confidence * gaussianProb)
       })
     })

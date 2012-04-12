@@ -1,0 +1,10 @@
+california man, 3,104,romance
+he's not really into dudes,2,100,romance
+beautiful woman,1,81,romance
+kevin longblade,101,10,action
+robo slayer 3000,99,5,action
+amped II,98,2,action
+
+
+
+

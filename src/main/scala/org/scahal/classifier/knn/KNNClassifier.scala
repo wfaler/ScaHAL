@@ -27,7 +27,7 @@ case class KNNClassifier[T](events: Seq[Event[T]]) {
           case _ => throw new IllegalArgumentException("kNN classifier can only deal with Continuous and Categorical Features")
         }
       })
-      (EuclidianDistance(pairs), event) :: input
+      (euclidianDist(pairs), event) :: input
     }).sortWith(_._1 < _._1)
 
     List.range(0,kSize).foldLeft(Map[T, Int]())((map, index) => {
