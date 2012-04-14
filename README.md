@@ -13,8 +13,12 @@ This is a work in progress, but will implement the following things at the least
 * Auto-associative memory
 * ..and much more..
 
+## Usage
+TODO, for now the best place to see usage is the unit test source code.
+
 ## Design goals
 There are many implementations of many of the algorithms in Java, however most of the implementations suffer from many thread safety issues, inconsistent API's and scalability problems. For these reasons, ScaHAL aims to provide:
+
 * An immutable implementation
 * A consistent API
 * A thread-safe  implementation that is safe to run in concurrent environments.
