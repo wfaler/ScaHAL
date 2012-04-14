@@ -16,7 +16,7 @@ case class KNNClassifier[T](events: Seq[Event[T]]) {
       val pairs = event.features.map(feature => {
         feature match{
           case ContinuousFeature(name,value) => (value, features.
-            find(_.featureColumn == feature.featureColumn).map(f => f.asInstanceOf[ContinuousFeature].value).getOrElse(dec(0d)))
+            find(_.featureColumn == feature.featureColumn).map(f => f.asInstanceOf[ContinuousFeature].value).getOrElse(dec(0)))
           case CategoricalFeature(name, value) => (dec(1), features.find(_ == feature).map(f => dec(1)).getOrElse(dec(0)))
           case _ => throw new IllegalArgumentException("kNN classifier can only deal with Continuous and Categorical Features")
         }
@@ -29,6 +29,8 @@ case class KNNClassifier[T](events: Seq[Event[T]]) {
       })
       (euclidianDist(pairs), event) :: input
     }).sortWith(_._1 < _._1)
+
+
 
     List.range(0,kSize).foldLeft(Map[T, Int]())((map, index) => {
       val outcome = distances(index)._2.outcome

@@ -3,7 +3,7 @@ package org.scahal.classifier.knn
 import org.specs2.Specification
 import io.Source
 import com.recursivity.math._
-import org.scahal.classifier.{Outcome, Event, ContinuousFeature}
+import org.scahal.classifier._
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,16 +18,47 @@ class KNNClassifierSpec extends Specification{ def is =
   "The kNN Classifier should" ^
     p^
       "classify numerical features correctly" ! movieNumericsOnly^
+      "classify categorical features correctly" ! categoricalOnly^
+      "deal with missing and additional features correctly" ! missingAdditional^
   end
 
   def movieNumericsOnly = {
     val features = List(ContinuousFeature("kicks", 18), ContinuousFeature("kisses", 90))
     val classifier = KNNClassifier(trainKnn)
-
     val outcomes = classifier(features, 4)
     (outcomes(0) must be_==(Outcome("romance", 0.75))) and
     (outcomes(1) must be_==(Outcome("action", 0.25)))
+  }
 
+  def categoricalOnly = {
+    val training = List(Event("success", List(CategoricalFeature("1", "1"),CategoricalFeature("2", "2"),CategoricalFeature("3", "3"))),
+      Event("success", List(CategoricalFeature("1", "2"),CategoricalFeature("2", "2"),CategoricalFeature("3", "3"))),
+      Event("failure", List(CategoricalFeature("1", "1"),CategoricalFeature("2", "4"),CategoricalFeature("3", "5"))),
+      Event("success", List(CategoricalFeature("1", "5"),CategoricalFeature("2", "1"),CategoricalFeature("3", "0"))))
+    val classifier = KNNClassifier(training)
+
+    val features = List(CategoricalFeature("1", "1"), CategoricalFeature("2", "2"), CategoricalFeature("2", "3"))
+    val outcomes = classifier(features, 3)
+    (outcomes(0).value must be_==("success")) and
+    (outcomes(1).value must be_==("failure")) and
+    (outcomes(0).confidence.toString.substring(0,4) must be_==("0.66")) and
+    (outcomes(1).confidence.toString.substring(0,4) must be_==("0.33"))
+  }
+
+  def missingAdditional = {
+    val training = List(Event("success", List(CategoricalFeature("1", "1"),CategoricalFeature("2", "2"),CategoricalFeature("3", "3"))),
+      Event("success", List(CategoricalFeature("1", "2"),CategoricalFeature("2", "2"),CategoricalFeature("3", "3"))),
+      Event("failure", List(CategoricalFeature("1", "1"),CategoricalFeature("2", "4"),CategoricalFeature("3", "5"))),
+      Event("failure", List(CategoricalFeature("1", "1"),CategoricalFeature("2", "4"),CategoricalFeature("3", "5"))),
+      Event("success", List(CategoricalFeature("1", "5"),CategoricalFeature("2", "1"),CategoricalFeature("3", "0"))))
+    val classifier = KNNClassifier(training)
+
+    val features = List(CategoricalFeature("1", "1"))
+    val outcomes = classifier(features, 3)
+    (outcomes(0).value must be_==("failure")) and
+    (outcomes(1).value must be_==("success")) and
+    (outcomes(0).confidence.toString.substring(0,4) must be_==("0.66")) and
+    (outcomes(1).confidence.toString.substring(0,4) must be_==("0.33"))
   }
 
 
