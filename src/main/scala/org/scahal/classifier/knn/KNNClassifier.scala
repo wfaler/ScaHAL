@@ -1,7 +1,7 @@
 package org.scahal.classifier.knn
 
 import org.scahal.classifier._
-import com.recursivity.math._
+import org.scahal.math._
 import scala.math._
 
 

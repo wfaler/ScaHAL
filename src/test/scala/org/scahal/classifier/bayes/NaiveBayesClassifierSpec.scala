@@ -3,7 +3,7 @@ package org.scahal.classifier.bayes
 import io.Source
 import org.specs2.Specification
 
-import com.recursivity.math._
+import org.scahal.math._
 import org.scahal.classifier._
 
 /**

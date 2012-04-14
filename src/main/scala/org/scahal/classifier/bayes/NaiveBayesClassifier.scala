@@ -1,8 +1,8 @@
 package org.scahal.classifier.bayes
 
 import org.scahal.classifier._
-import com.recursivity.math._
-import com.recursivity.math.stats._
+import org.scahal.math._
+import org.scahal.math.stats._
 
 object NaiveBayesClassifier {
   

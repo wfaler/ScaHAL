@@ -1,5 +1,5 @@
 # ScaHAL, a machine learning and AI toolkit for Scala
-A Machine Learning and AI toolkit/library for Scala (depends on [Recursivity Maths](https://github.com/wfaler/recursivity-maths)).
+A Machine Learning and AI toolkit/library for Scala with no external dependencies.
 This is a work in progress, but will implement the following things at the least:
 
 * Naive Bayes classifier (IMPLEMENTED)

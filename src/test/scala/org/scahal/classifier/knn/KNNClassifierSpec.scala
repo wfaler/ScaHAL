@@ -2,7 +2,7 @@ package org.scahal.classifier.knn
 
 import org.specs2.Specification
 import io.Source
-import com.recursivity.math._
+import org.scahal.math._
 import org.scahal.classifier._
 
 /**
