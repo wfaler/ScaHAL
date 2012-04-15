@@ -36,7 +36,7 @@ case class NaiveBayesClassifier[T](outcomes: Map[T, Int], model: Map[T, FeatureM
 
        Outcome(entry._1, categoricalColumns.foldLeft(outcomeProbabilities(entry._1))((lastResult, column) => {
        featureCount.get((entry._1)).get.get(column).map(featuresMap => {
-         featuresMap.get(features.find(_.featureColumn == column).getOrElse(NonFeature)).map(value => {
+         featuresMap.get(features.find(_.featureColumn == column).getOrElse(ZeroFeature)).map(value => {
            lastResult * (dec(value) / dec(outcomes(entry._1) + laplaceSmoothingCoefficient))
          }).getOrElse(lastResult)
        }).getOrElse(lastResult)

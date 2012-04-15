@@ -29,6 +29,7 @@ class PackageFunctionSpec extends Specification{ def is =
     "calculate the ATR correctly" ! calcAtr^
     "calculate the Sharpe Ratio correctly" ! calcSharpe^
     "have a gaussian function that returns approximately 0.034 given a mean=73, stdDev=6.2 and value of 66" ! gaussianProb^
+    "the sigmoid function applied to 0 should result in 0.5" ! sigmoidResult^
     end
 
 
@@ -82,6 +83,10 @@ class PackageFunctionSpec extends Specification{ def is =
 
   def gaussianProb = {
     gaussian(73, 6.2, 66) must be_==(dec(0.03401870545760999))
+  }
+
+  def sigmoidResult = {
+    sigmoid(0) must be_==(dec(0.5))
   }
 
 }

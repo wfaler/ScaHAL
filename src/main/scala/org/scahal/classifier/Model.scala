@@ -18,8 +18,8 @@ sealed trait Feature {
   def featureColumn = FeatureColumn(name, this.getClass)
 }
 
-case object NonFeature extends Feature{
-  def name = "NonFeature"
+case object ZeroFeature extends Feature{
+  def name = "zeroFeature"
 }
 
 case class CategoricalFeature[T](name: String, category: T) extends Feature

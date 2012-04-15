@@ -10,9 +10,9 @@ object MachineLearning extends Build {
 
   val parentSettings = Defaults.defaultSettings ++ Seq(
     parallelExecution := false,
-    organization := "com.recursivity",
+    organization := "org.scahal",
     version := "1.0.0-SNAPSHOT",
-    crossScalaVersions := Seq("2.9.1"),
+    crossScalaVersions := Seq("2.9.2"),
     scalaVersion <<= (crossScalaVersions) {
       versions => versions.head
     },
@@ -43,7 +43,7 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.7.1")
   val sonatypeSnapshots = "Sonatype Nexus Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   object Dependencies {
     //val base64 = "net.iharder" % "base64" % "2.3.8"
-    val specs2 = "org.specs2" %% "specs2" % "1.8" % "test"
+    val specs2 = "org.specs2" %% "specs2" % "1.9" % "test"
     val scalaLang = "org.scala-lang" % "scala-library" % "2.9.1"
 
   //  val classifier = "com.recursivity" %% "classifier" % "1.0.0-SNAPSHOT"
@@ -51,9 +51,9 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.7.1")
 
   import Dependencies._
 
-  lazy val machineLearning = Project("ml", file("."),
-    settings = parentSettings ++ seq(sbtassembly.Plugin.assemblySettings: _*))
-    .settings(libraryDependencies := Seq(specs2, scalaLang),
+  lazy val machineLearning = Project("ScaHAL", file("."),
+    settings = parentSettings)
+    .settings(libraryDependencies := Seq(specs2),
     publishArtifact in Compile := false,
     description := "Parent project",
 	resolvers ++= repos)
