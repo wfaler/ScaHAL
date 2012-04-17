@@ -2,9 +2,9 @@
 A Machine Learning and AI toolkit/library for Scala, [depends on Scalala](https://github.com/scalala/Scalala).
 This is a work in progress, but will implement the following things at the least:
 
+* K Nearest Neighbour classifier (IMPLEMENTED)
 * Naive Bayes classifier (IMPLEMENTED)
-* K Nearest Neighbour (IMPLEMENTED)
-* Logistic regression classifier
+* Logistic regression classifier (STARTED)
 * Support Vector Machines
 * Maximum Entropy classifier
 * k-means clustering
