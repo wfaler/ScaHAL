@@ -45,7 +45,7 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.7.1")
   object Dependencies {
     //val base64 = "net.iharder" % "base64" % "2.3.8"
     val specs2 = "org.specs2" %% "specs2" % "1.9" % "test"
-    val scalala = "org.scalala" % "scalala_2.9.1" % "1.0.0.RC3-SNAPSHOT"
+    val scalala = "org.scalala" % "scalala_2.9.2" % "1.0.0.RC3-SNAPSHOT"
 
   //  val classifier = "com.recursivity" %% "classifier" % "1.0.0-SNAPSHOT"
   }

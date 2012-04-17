@@ -1,9 +1,11 @@
 package org.scahal.classifier.logistic
 
-import org.scahal.classifier.{FeatureColumn, Event}
-import org.scahal.math._
-import scalala.tensor.dense.DenseVectorCol
+import org.scahal.math.stats._
 import scalala.tensor.VectorCol
+import scalala.tensor.mutable._;
+import scalala.tensor.dense._
+import org.scahal.classifier.{ContinuousFeature, FeatureColumn, Event}
+;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,18 +16,20 @@ import scalala.tensor.VectorCol
  */
 
 
-object StochasticGradientAscent{
-  def apply(events: Seq[Event[Double]], alpha: Double = 0.001): List[BigDecimal] = {
-    val columns = events.foldLeft(Set[FeatureColumn]())((set, event) => event.features.map(_.featureColumn).toSet ++ set)
-   // VectorCol[Double]
-    val weights: VectorCol[Double] = DenseVectorCol.ones[Double](events.size)
+object GradientAscent{
 
-    Range(0, events.size).foldLeft(weights)((w, counter) => {
-      val h = 1d  //= sigmoid(sum(dataMatrix[i]*weights))
-      val error = events(counter).outcome - h
-     // weights = weights + alpha * error * dataMatrix[i]
-      null
+  def apply(events: Seq[Event[Double]], alpha : Double = 0.001, maxCycles: Int = 500): VectorCol[Double] = {
+    val columns = events.foldLeft(Set[FeatureColumn]())((set, event) => event.features.map(_.featureColumn).toSet ++ set).toList
+    val labels: VectorCol[Double] = DenseVectorCol(events.map(_.outcome).toArray)
+
+    val trainingSet: Matrix[Double] = DenseMatrix.tabulate(events.size, columns.size)((i,j) => {
+       events(i).features.find(columns(j) == _.featureColumn).map(_.asInstanceOf[ContinuousFeature].value.toDouble).getOrElse(0d)
     })
-    null
+
+    Range(0, maxCycles).foldLeft(DenseVectorCol.ones[Double](columns.size))((weights, c) => {
+      val error = labels - ((trainingSet * weights).map(sigmoid(_)))
+      weights + (trainingSet.t * error) * alpha
+    })
   }
+
 }

@@ -29,7 +29,9 @@ object `package`{
   def gaussian(mean: BigDecimal, stdDev: BigDecimal, value: BigDecimal): BigDecimal =
     (1/(sqrt(2*Pi)*stdDev.toDouble))*(pow(E, (-1 * pow(value.toDouble - mean.toDouble, 2)/(2*pow(stdDev.toDouble,2)))))
 
-  def sigmoid(z: BigDecimal): BigDecimal = dec(1.0/(1+exp(-z.toDouble)))
+  //def sigmoid(z: BigDecimal): BigDecimal = dec(1.0/(1+exp(-z.toDouble)))
+
+  def sigmoid(z: Double): Double = 1.0/(1+exp(-z))
 
   private def varianceWithCount(values: List[BigDecimal], count: Int): BigDecimal = {
     val average = mean(values)
