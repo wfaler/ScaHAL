@@ -1,6 +1,7 @@
 package org.scahal.classifier
 
 import org.specs2.Specification
+import org.specs2.matcher.ThrownExpectations
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,7 +11,7 @@ import org.specs2.Specification
  * To change this template use File | Settings | File Templates.
  */
 
-class FeatureMatrixSpec extends Specification{ def is =
+class FeatureMatrixSpec extends Specification with ThrownExpectations { def is =
 
   "The FeatureMatrix should" ^
   p^
@@ -26,13 +27,13 @@ class FeatureMatrixSpec extends Specification{ def is =
     val matrix = FeatureMatrix(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "world")))
     val result = matrix(List(CategoricalFeature("1", "howdy"), CategoricalFeature("3", "person")))
 
-    (result.columns must have size(3)) and
-    (result.rows must have size(2)) and
-    (result.columns must contain(FeatureColumn("1", classOf[CategoricalFeature[String]]))) and
-    (result.columns must contain(FeatureColumn("2", classOf[CategoricalFeature[String]]))) and
-    (result.columns must contain(FeatureColumn("3", classOf[CategoricalFeature[String]]))) and
-    (result.rows must contain(List(CategoricalFeature("1", "howdy"), CategoricalFeature("3", "person")))) and
-    (result.rows must contain(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "world")))) //and
+    result.columns must have size(3)
+    result.rows must have size(2)
+    result.columns must contain(FeatureColumn("1", classOf[CategoricalFeature[String]]))
+    result.columns must contain(FeatureColumn("2", classOf[CategoricalFeature[String]]))
+    result.columns must contain(FeatureColumn("3", classOf[CategoricalFeature[String]]))
+    result.rows must contain(List(CategoricalFeature("1", "howdy"), CategoricalFeature("3", "person")))
+    result.rows must contain(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "world")))
   }
   
   def wrongColumn = {
@@ -46,27 +47,27 @@ class FeatureMatrixSpec extends Specification{ def is =
       Event("failure", List(CategoricalFeature("1", "bye"), CategoricalFeature("2", "venus"))),
               Event("failure", List(CategoricalFeature("1", "evening"), CategoricalFeature("2", "mars"))))
     val outcomes = ModelBuilder(input)
-    (outcomes.contains("success") must  beTrue) and
-    (outcomes.contains("failure") must  beTrue) and
-    (outcomes("success").rows must have size(2)) and
-    (outcomes("failure").rows must have size(2)) and
-    (outcomes("failure").rows must contain(input(2).features)) and
-    (outcomes("failure").rows must contain(input(3).features)) and
-    (outcomes("success").rows must contain(input(0).features)) and
-    (outcomes("success").rows must contain(input(1).features))
+    outcomes.contains("success") must  beTrue
+    outcomes.contains("failure") must  beTrue
+    outcomes("success").rows must have size(2)
+    outcomes("failure").rows must have size(2)
+    outcomes("failure").rows must contain(input(2).features)
+    outcomes("failure").rows must contain(input(3).features)
+    outcomes("success").rows must contain(input(0).features)
+    outcomes("success").rows must contain(input(1).features)
   }
 
   def featuresInMatrix = {
     val matrix = FeatureMatrix(List(CategoricalFeature("1", "hello"), CategoricalFeature("2", "world")))
     val allFeatures = matrix(List(CategoricalFeature("1", "howdy"), CategoricalFeature("3", "person"))).categoricalFeatures()
 
-    (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have size(2)) and
-    (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "hello"))) and
-    (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "howdy"))) and
-    (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have size(1)) and
-    (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "world"))) and
-    (allFeatures(CategoricalFeature("3", "hello").featureColumn) must have size(1)) and
-    (allFeatures(CategoricalFeature("3", "hello").featureColumn) must have contain(CategoricalFeature("3", "person")))
+    allFeatures(CategoricalFeature("1", "hello").featureColumn) must have size(2)
+    allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "hello"))
+    allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "howdy"))
+    allFeatures(CategoricalFeature("2", "hello").featureColumn) must have size(1)
+    allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "world"))
+    allFeatures(CategoricalFeature("3", "hello").featureColumn) must have size(1)
+    allFeatures(CategoricalFeature("3", "hello").featureColumn) must have contain(CategoricalFeature("3", "person"))
   }
 
   def allFeatures = {
@@ -79,16 +80,16 @@ class FeatureMatrixSpec extends Specification{ def is =
 
     val allFeatures = AllFeatures(model)
 
-    (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have size(2)) and
-     (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "hello"))) and
-     (allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "howdy"))) and
-     (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have size(2)) and
-     (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "world"))) and
-     (allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "planet"))) and
-     (allFeatures(CategoricalFeature("3", "hello").featureColumn) must have size(1)) and
-     (allFeatures(CategoricalFeature("3", "hello").featureColumn) must have contain(CategoricalFeature("3", "person"))) and
-     (allFeatures(CategoricalFeature("4", "hello").featureColumn) must have size(1)) and
-     (allFeatures(CategoricalFeature("4", "hello").featureColumn) must have contain(CategoricalFeature("4", "ogre")))
+    allFeatures(CategoricalFeature("1", "hello").featureColumn) must have size(2)
+    allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "hello"))
+    allFeatures(CategoricalFeature("1", "hello").featureColumn) must have contain(CategoricalFeature("1", "howdy"))
+    allFeatures(CategoricalFeature("2", "hello").featureColumn) must have size(2)
+    allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "world"))
+    allFeatures(CategoricalFeature("2", "hello").featureColumn) must have contain(CategoricalFeature("2", "planet"))
+    allFeatures(CategoricalFeature("3", "hello").featureColumn) must have size(1)
+    allFeatures(CategoricalFeature("3", "hello").featureColumn) must have contain(CategoricalFeature("3", "person"))
+    allFeatures(CategoricalFeature("4", "hello").featureColumn) must have size(1)
+    allFeatures(CategoricalFeature("4", "hello").featureColumn) must have contain(CategoricalFeature("4", "ogre"))
   }
 
   def laplaceSmoothing = {
@@ -103,13 +104,13 @@ class FeatureMatrixSpec extends Specification{ def is =
     val succ = smap("success")
     val fail = smap("failure")
 
-    (succ.keySet must have size(4)) and
-    (fail.keySet must have size(4)) and
-    (succ(FeatureColumn("4", classOf[CategoricalFeature[_]])).get(CategoricalFeature("4", "ogre")).get must be_==(1)) and
-    (succ(FeatureColumn("1", classOf[CategoricalFeature[_]])).get(CategoricalFeature("1", "hello")).get must be_==(1)) and
-    (succ(FeatureColumn("1", classOf[CategoricalFeature[_]])).get(CategoricalFeature("1", "howdy")).get must be_==(1)) and
-    (succ(FeatureColumn("2", classOf[CategoricalFeature[_]])).get(CategoricalFeature("2", "world")).get must be_==(1)) and
-    (succ(FeatureColumn("2", classOf[CategoricalFeature[_]])).get(CategoricalFeature("2", "planet")).get must be_==(1))
+    succ.keySet must have size(4)
+    fail.keySet must have size(4)
+    succ(FeatureColumn("4", classOf[CategoricalFeature[_]])).get(CategoricalFeature("4", "ogre")).get must be_==(1)
+    succ(FeatureColumn("1", classOf[CategoricalFeature[_]])).get(CategoricalFeature("1", "hello")).get must be_==(1)
+    succ(FeatureColumn("1", classOf[CategoricalFeature[_]])).get(CategoricalFeature("1", "howdy")).get must be_==(1)
+    succ(FeatureColumn("2", classOf[CategoricalFeature[_]])).get(CategoricalFeature("2", "world")).get must be_==(1)
+    succ(FeatureColumn("2", classOf[CategoricalFeature[_]])).get(CategoricalFeature("2", "planet")).get must be_==(1)
   }
 
 }
