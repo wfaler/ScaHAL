@@ -1,6 +1,7 @@
 package org.scahal.math
 
 import org.specs2.Specification
+import org.specs2.matcher.ThrownExpectations
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +11,7 @@ import org.specs2.Specification
  * To change this template use File | Settings | File Templates.
  */
 
-class PackageFunctionSpec  extends Specification{ def is =
+class PackageFunctionSpec  extends Specification with ThrownExpectations { def is =
 
   "The PackageFunctions implicits should"  ^
     p ^
@@ -21,11 +22,11 @@ class PackageFunctionSpec  extends Specification{ def is =
 
 
   def convert = {
-    (dec(1).intValue() must  be_==(new java.math.BigDecimal("1").intValue())) and
-    (dec(1f).floatValue() must  be_==(new java.math.BigDecimal("1").floatValue())) and
-    (dec(1l).longValue() must  be_==(new java.math.BigDecimal("1").longValue())) and
-    ((dec(1d) - 1).toDouble must  be_==(new java.math.BigDecimal("0.0").doubleValue())) and
-    (dec("1").toInt must  be_==(new java.math.BigDecimal("1").intValue()))
+    dec(1).intValue() must  be_==(new java.math.BigDecimal("1").intValue())
+    dec(1f).floatValue() must  be_==(new java.math.BigDecimal("1").floatValue())
+    dec(1l).longValue() must  be_==(new java.math.BigDecimal("1").longValue())
+    (dec(1d) - 1).toDouble must  be_==(new java.math.BigDecimal("0.0").doubleValue())
+    dec("1").toInt must  be_==(new java.math.BigDecimal("1").intValue())
   }
 
   def failConvert = {

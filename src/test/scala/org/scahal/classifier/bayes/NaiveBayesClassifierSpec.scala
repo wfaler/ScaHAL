@@ -5,12 +5,13 @@ import org.specs2.Specification
 
 import org.scahal.math._
 import org.scahal.classifier._
+import org.specs2.matcher.ThrownExpectations
 
 /**
  * http://www.slideshare.net/aorriols/lecture10-nave-bayes
  */
 
-class NaiveBayesClassifierSpec extends Specification { def is =
+class NaiveBayesClassifierSpec extends Specification  with ThrownExpectations  { def is =
 
   "The Naive Bayesian Classifier should" ^
     p^
@@ -32,10 +33,10 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val function = NaiveBayesClassifier(events)
 
     val outcomes = function(toClassify)
-    (outcomes(0).value must be_==("no")) and
-    (outcomes(0).confidence must be_>(dec(0.73))) and
-    (outcomes(1).value must be_==("yes")) and
-    (outcomes(1).confidence must be_<(dec(0.27)))
+    outcomes(0).value must be_==("no")
+    outcomes(0).confidence must be_>(dec(0.73))
+    outcomes(1).value must be_==("yes")
+    outcomes(1).confidence must be_<(dec(0.27))
   }
 
   def failProbsValidation = {
@@ -54,11 +55,11 @@ class NaiveBayesClassifierSpec extends Specification { def is =
 
     val outcomes = function(toClassify)
 
-    (outcomes must have size(2)) and
-    (outcomes(0).value must be_==("yes")) and
-    (outcomes(0).confidence must be_>(dec(0.7))) and
-    (outcomes(1).value must be_==("no")) and
-    (outcomes(1).confidence must be_<(dec(0.3)))
+    outcomes must have size(2)
+    outcomes(0).value must be_==("yes")
+    outcomes(0).confidence must be_>(dec(0.7))
+    outcomes(1).value must be_==("no")
+    outcomes(1).confidence must be_<(dec(0.3))
   }
 
   def bagOfWords = {
@@ -69,29 +70,29 @@ class NaiveBayesClassifierSpec extends Specification { def is =
     val toClassify = List(BagOfWordsFeature("spam"), BagOfWordsFeature("puppies"), BagOfWordsFeature("cats"), BagOfWordsFeature("unspecified"))
 
     val outcomes = function(toClassify)
-    (outcomes must have size(2)) and
-    (outcomes(0).value must be_==("ham")) and
-    (outcomes(0).confidence must be_>(dec(0.8))) and
-    (outcomes(1).value must be_==("spam")) and
-    (outcomes(1).confidence must be_<(dec(0.2)))
+    outcomes must have size(2)
+    outcomes(0).value must be_==("ham")
+    outcomes(0).confidence must be_>(dec(0.8))
+    outcomes(1).value must be_==("spam")
+    outcomes(1).confidence must be_<(dec(0.2))
   }
 
   def noFeatures = {
     val function = NaiveBayesClassifier(events)
     val outcomes = function(Seq[Feature]())
-    (outcomes must have size(2)) and
-    (outcomes(0).value must be_==("yes")) and
-    (outcomes(0).confidence must be_>(dec(0.64))) and
-    (outcomes(1).value must be_==("no")) and
-    (outcomes(1).confidence must be_<(dec(0.36)))
+    outcomes must have size(2)
+    outcomes(0).value must be_==("yes")
+    outcomes(0).confidence must be_>(dec(0.64))
+    outcomes(1).value must be_==("no")
+    outcomes(1).confidence must be_<(dec(0.36))
   }
 
   def numericOnly = {
     val function = NaiveBayesClassifier(numerical)
     val outcomes = function(List(ContinuousFeature("height", 6), ContinuousFeature("weight", 130), ContinuousFeature("shoes", 8)))
 
-    (outcomes must have size(2)) and
-    (outcomes(0).value must be_==("female"))
+    outcomes must have size(2)
+    outcomes(0).value must be_==("female")
   }
 
   def missingNumeric = {
