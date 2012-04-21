@@ -4,7 +4,7 @@ This is a work in progress, but will implement the following things at the least
 
 * K Nearest Neighbour classifier (IMPLEMENTED)
 * Naive Bayes classifier (IMPLEMENTED)
-* Logistic regression classifier (STARTED)
+* Logistic regression classifier (IMPLEMENTED)
 * Support Vector Machines
 * Maximum Entropy classifier
 * k-means clustering
