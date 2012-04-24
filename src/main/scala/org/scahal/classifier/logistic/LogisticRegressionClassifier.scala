@@ -7,8 +7,6 @@ import scalala.tensor.VectorCol
 import scalala.tensor.dense._
 import scalala.tensor.mutable._
 import org.scahal.classifier._
-import scala._
-;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,8 +18,8 @@ import scala._
 
 case class OptimizationAlgorithmProperties(events: Seq[Event[Double]]){
   val columns = events.foldLeft(Set[FeatureColumn]())((set, event) => event.features
-          .map(_.featureColumn).toSet ++ set).toList
-
+    .map(_.featureColumn).toSet ++ set).toList
+  
   val labels: VectorCol[Double] = DenseVectorCol(events.map(_.outcome).toArray)
 
   val trainingSet: Matrix[Double] =  DenseMatrix.tabulate(events.size, columns.size)((i,j) => {
