@@ -1,5 +1,6 @@
 package org.scahal.classifier
 
+import org.scahal.math._
 /**
  * Created by IntelliJ IDEA.
  * User: wfaler
@@ -23,6 +24,13 @@ case object ZeroFeature extends Feature{
 }
 
 case class CategoricalFeature[T](name: String, category: T) extends Feature
+
+object ContinuousFeature{
+  def apply(name: String, value: Double): ContinuousFeature = ContinuousFeature(name, dec(value))
+  def apply(name: String, value: Int): ContinuousFeature = ContinuousFeature(name, dec(value))
+  def apply(name: String, value: Long): ContinuousFeature = ContinuousFeature(name, dec(value))
+  def apply(name: String, value: Float): ContinuousFeature = ContinuousFeature(name, dec(value))
+}
 
 case class ContinuousFeature(name: String, value: BigDecimal) extends Feature
 
