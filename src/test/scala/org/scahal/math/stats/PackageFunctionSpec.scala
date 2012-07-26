@@ -70,7 +70,7 @@ class PackageFunctionSpec extends Specification{ def is =
   }
 
   def calcVariance = {
-    variance(List(600, 470,170,430,300)) must be_==(dec("21704.0"))
+    variance(List(600, 470,170,430,300)) must be_==(dec("21704.000000000004"))
   }
 
   def calcSharpe = {
@@ -78,7 +78,7 @@ class PackageFunctionSpec extends Specification{ def is =
   }
 
   def calcAtr = {
-    tr(48.7d, 47.79, 48.16d) must be_==(dec("0.91"))
+    tr(48.7d, 47.79, 48.16d) must be_==(dec("0.9100000000000037"))
   }
 
   def gaussianProb = {

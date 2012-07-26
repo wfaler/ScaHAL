@@ -1,4 +1,4 @@
-package org.scahal.classifier.knn
+package org.scahal.classifier
 
 import org.specs2.Specification
 import io.Source

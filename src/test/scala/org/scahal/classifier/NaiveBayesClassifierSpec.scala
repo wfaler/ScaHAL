@@ -1,4 +1,4 @@
-package org.scahal.classifier.bayes
+package org.scahal.classifier
 
 import io.Source
 import org.specs2.Specification
@@ -11,32 +11,33 @@ import org.specs2.matcher.ThrownExpectations
  * http://www.slideshare.net/aorriols/lecture10-nave-bayes
  */
 
-class NaiveBayesClassifierSpec extends Specification  with ThrownExpectations  { def is =
+class NaiveBayesClassifierSpec extends Specification with ThrownExpectations {
+  def is =
 
-  "The Naive Bayesian Classifier should" ^
-    p^
-      "Classify correctly given a simple categorical feature set" ! happyPath^
-      "Throw an exception if probabilities do not contain all labels in training data" ! failProbsValidation^
-      "Throw an exception if training data does not contain all probability labels" ! failProbsTrainingData^
-      "Smooth out feature values to avoid zero-division" ! zeroDivisionSmoothing^
-      "Smooth out lacking feature categories to avoid zero division" ! bagOfWords^
-      "Give correct probabilities when no features are given" ! noFeatures^
-      "Be able to work with continuous (numeric) features only " ! numericOnly^
-      "Throw an Exception if a numeric feature is missing" ! missingNumeric^
-      "Be able to work with mixed continuous and categorical features " ! mixedFeatures^
+    "The Naive Bayesian Classifier should" ^
+      p ^
+      "Classify correctly given a simple categorical feature set" ! happyPath ^
+      "Throw an exception if probabilities do not contain all labels in training data" ! failProbsValidation ^
+      "Throw an exception if training data does not contain all probability labels" ! failProbsTrainingData ^
+      "Smooth out feature values to avoid zero-division" ! zeroDivisionSmoothing ^
+      "Smooth out lacking feature categories to avoid zero division" ! bagOfWords ^
+      "Give correct probabilities when no features are given" ! noFeatures ^
+      "Be able to work with continuous (numeric) features only " ! numericOnly ^
+      "Throw an Exception if a numeric feature is missing" ! missingNumeric ^
+      "Be able to work with mixed continuous and categorical features " ! mixedFeatures ^
       end
 
   def happyPath = {
     val toClassify = List(CategoricalFeature("outlook", "sunny"), CategoricalFeature("temperature", "cool"),
-      CategoricalFeature("humidity", "high"),CategoricalFeature("wind", "strong"))
+      CategoricalFeature("humidity", "high"), CategoricalFeature("wind", "strong"))
 
     val function = NaiveBayesClassifier(events)
 
     val outcomes = function(toClassify)
     outcomes(0).value must be_==("no")
-    outcomes(0).confidence must be_>(dec(0.73))
+    outcomes(0).confidence must be_>(0.73)
     outcomes(1).value must be_==("yes")
-    outcomes(1).confidence must be_<(dec(0.27))
+    outcomes(1).confidence must be_<(0.27)
   }
 
   def failProbsValidation = {
@@ -44,18 +45,18 @@ class NaiveBayesClassifierSpec extends Specification  with ThrownExpectations  {
   }
 
   def failProbsTrainingData = {
-    NaiveBayesClassifier(events, Some(Map("yes" -> dec(0.5), "no" -> dec(0.25),"maybe" -> dec(0.25)))) must throwAn[IllegalStateException]
+    NaiveBayesClassifier(events, Some(Map("yes" -> dec(0.5), "no" -> dec(0.25), "maybe" -> dec(0.25)))) must throwAn[IllegalStateException]
   }
 
   def zeroDivisionSmoothing = {
     val toClassify = List(CategoricalFeature("outlook", "overcast"), CategoricalFeature("temperature", "cool"),
-      CategoricalFeature("humidity", "high"),CategoricalFeature("wind", "strong"))
+      CategoricalFeature("humidity", "high"), CategoricalFeature("wind", "strong"))
 
     val function = NaiveBayesClassifier(events)
 
     val outcomes = function(toClassify)
 
-    outcomes must have size(2)
+    outcomes must have size (2)
     outcomes(0).value must be_==("yes")
     outcomes(0).confidence must be_>(dec(0.7))
     outcomes(1).value must be_==("no")
@@ -70,9 +71,9 @@ class NaiveBayesClassifierSpec extends Specification  with ThrownExpectations  {
     val toClassify = List(BagOfWordsFeature("spam"), BagOfWordsFeature("puppies"), BagOfWordsFeature("cats"), BagOfWordsFeature("unspecified"))
 
     val outcomes = function(toClassify)
-    outcomes must have size(2)
+    outcomes must have size (2)
     outcomes(0).value must be_==("ham")
-    outcomes(0).confidence must be_>(dec(0.8))
+    outcomes(0).confidence must be_>(0.79)
     outcomes(1).value must be_==("spam")
     outcomes(1).confidence must be_<(dec(0.2))
   }
@@ -80,7 +81,7 @@ class NaiveBayesClassifierSpec extends Specification  with ThrownExpectations  {
   def noFeatures = {
     val function = NaiveBayesClassifier(events)
     val outcomes = function(Seq[Feature]())
-    outcomes must have size(2)
+    outcomes must have size (2)
     outcomes(0).value must be_==("yes")
     outcomes(0).confidence must be_>(dec(0.64))
     outcomes(1).value must be_==("no")
@@ -91,7 +92,7 @@ class NaiveBayesClassifierSpec extends Specification  with ThrownExpectations  {
     val function = NaiveBayesClassifier(numerical)
     val outcomes = function(List(ContinuousFeature("height", 6), ContinuousFeature("weight", 130), ContinuousFeature("shoes", 8)))
 
-    outcomes must have size(2)
+    outcomes must have size (2)
     outcomes(0).value must be_==("female")
   }
 
@@ -107,28 +108,28 @@ class NaiveBayesClassifierSpec extends Specification  with ThrownExpectations  {
 
     val nonMixed = NaiveBayesClassifier(numerical)(List(ContinuousFeature("height", 6), ContinuousFeature("weight", 130), ContinuousFeature("shoes", 8)))
 
-    (outcomes must have size(2)) and
-    (outcomes(0).value must be_==("female")) and
-    (nonMixed must have size(2)) and
-    (nonMixed(0).value must be_==("female")) and
-    ((nonMixed(0).confidence) must be_>=(outcomes(0).confidence))
+    (outcomes must have size (2)) and
+      (outcomes(0).value must be_==("female")) and
+      (nonMixed must have size (2)) and
+      (nonMixed(0).value must be_==("female")) and
+      ((nonMixed(0).confidence) must be_>=(outcomes(0).confidence))
   }
 
   def numerical = Source.fromInputStream(this.getClass.getResourceAsStream("/numerical.txt"), "UTF-8").getLines().map(line => {
-          val splits = line.split(",")
-          Event(splits(0), List(ContinuousFeature("height", splits(1)), ContinuousFeature("weight", splits(2)),
-            ContinuousFeature("shoes", splits(3))))
-        }).toList
+    val splits = line.split(",")
+    Event(splits(0), List(ContinuousFeature("height", splits(1)), ContinuousFeature("weight", splits(2)),
+      ContinuousFeature("shoes", splits(3))))
+  }).toList
 
   def mixed = Source.fromInputStream(this.getClass.getResourceAsStream("/numerical.txt"), "UTF-8").getLines().map(line => {
-          val splits = line.split(",")
-          Event(splits(0), List(ContinuousFeature("height", splits(1)), ContinuousFeature("weight", splits(2)),
-            ContinuousFeature("shoes", splits(3)), CategoricalFeature("bag", splits(4))))
-        }).toList
+    val splits = line.split(",")
+    Event(splits(0), List(ContinuousFeature("height", splits(1)), ContinuousFeature("weight", splits(2)),
+      ContinuousFeature("shoes", splits(3)), CategoricalFeature("bag", splits(4))))
+  }).toList
 
   def events = Source.fromInputStream(this.getClass.getResourceAsStream("/tennis.txt"), "UTF-8").getLines().map(line => {
-        val splits = line.split(",")
-        Event(splits(4), List(CategoricalFeature("outlook", splits(0)), CategoricalFeature("temperature", splits(1)),
-          CategoricalFeature("humidity", splits(2)), CategoricalFeature("wind", splits(3))))
-      }).toList
+    val splits = line.split(",")
+    Event(splits(4), List(CategoricalFeature("outlook", splits(0)), CategoricalFeature("temperature", splits(1)),
+      CategoricalFeature("humidity", splits(2)), CategoricalFeature("wind", splits(3))))
+  }).toList
 }

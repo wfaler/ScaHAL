@@ -1,4 +1,4 @@
-package org.scahal.classifier.logistic
+package org.scahal.classifier
 
 import org.specs2.Specification
 import org.scahal.classifier.{Event, ContinuousFeature}

@@ -10,7 +10,7 @@ import org.scahal.math._
  */
 case class FeatureColumn(name: String, cls: Class[ _ <: Feature])
 
-case class Outcome[T](value: T, confidence: BigDecimal)
+case class Outcome[T](value: T, confidence: Double)
 
 case class Event[T](outcome: T, features: Seq[Feature])
 
@@ -26,17 +26,17 @@ case object ZeroFeature extends Feature{
 case class CategoricalFeature[T](name: String, category: T) extends Feature
 
 object ContinuousFeature{
-  def apply(name: String, value: Double): ContinuousFeature = ContinuousFeature(name, dec(value))
+  def apply(name: String, value: BigDecimal): ContinuousFeature = ContinuousFeature(name, value.toDouble)
   def apply(name: String, value: Int): ContinuousFeature = ContinuousFeature(name, dec(value))
   def apply(name: String, value: Long): ContinuousFeature = ContinuousFeature(name, dec(value))
   def apply(name: String, value: Float): ContinuousFeature = ContinuousFeature(name, dec(value))
 }
 
-case class ContinuousFeature(name: String, value: BigDecimal) extends Feature
+case class ContinuousFeature(name: String, value: Double) extends Feature
 
 object BagOfWordsFeature{
   def apply(word: String): Feature = CategoricalFeature(word, word)
 }
 
-case class GaussianDistribution(mean: BigDecimal, standardDeviation: BigDecimal)
+case class GaussianDistribution(mean: Double, standardDeviation: Double)
 

@@ -1,4 +1,4 @@
-package org.scahal.classifier.logistic
+package org.scahal.classifier
 
 import org.scahal.math._
 import org.scahal.math.stats._
