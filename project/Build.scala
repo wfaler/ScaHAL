@@ -52,10 +52,10 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.7.1")
 
   import Dependencies._
 
-  lazy val machineLearning = Project("scahal", file("."),
+  lazy val machineLearning = Project("ScaHAL", file("."),
     settings = parentSettings)
     .settings(libraryDependencies := Seq(scalala,specs2),
-//    publishArtifact in Compile := false,
+    publishArtifact in Compile := false,
     description := "Parent project",
 	resolvers ++= repos)
 }

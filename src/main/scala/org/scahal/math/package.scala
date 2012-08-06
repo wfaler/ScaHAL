@@ -13,29 +13,33 @@ import scala.math._
 object `package`{
 
   // Generic type T causes StackOverFlow, therefore implicit conversion for each numeric type
-  implicit def intToDouble(value: Int): Double = value.toDouble
+  implicit def intToBigDecimal(value: Int): BigDecimal = new java.math.BigDecimal(value.toString)
 
-  implicit def floatToDouble(value: Float): Double = value.toDouble
+  implicit def floatToBigDecimal(value: Float): BigDecimal = new java.math.BigDecimal(value.toString)
 
-  implicit def longToDouble(value: Long): Double = value.toDouble
+  implicit def doubleToBigDecimal(value: Double): BigDecimal = new java.math.BigDecimal(value.toString)
 
-  implicit def stringToDouble(value: String): Double = new java.math.BigDecimal(value).doubleValue()
+  implicit def longToBigDecimal(value: Long): BigDecimal = new java.math.BigDecimal(value.toString)
 
-  implicit def stringListToDouble(values: List[String]): List[Double] = values.map(dec(_))
+  implicit def stringToBigDecimal(value: String): BigDecimal = new java.math.BigDecimal(value)
 
-  implicit def longListToDouble(values: List[Long]): List[Double] = values.map(dec(_))
+  implicit def stringListToBigDecimal(values: List[String]): List[BigDecimal] = values.map(dec(_))
 
-  implicit def floatListToDouble(values: List[Float]): List[Double] = values.map(dec(_))
+  implicit def longListToBigDecimal(values: List[Long]): List[BigDecimal] = values.map(dec(_))
 
-  implicit def intListToDouble(values: List[Int]): List[Double] = values.map(dec(_))
+  implicit def doubleListToBigDecimal(values: List[Double]): List[BigDecimal] = values.map(dec(_))
+
+  implicit def floatListToBigDecimal(values: List[Float]): List[BigDecimal] = values.map(dec(_))
+
+  implicit def intListToBigDecimal(values: List[Int]): List[BigDecimal] = values.map(dec(_))
 
   /**
    * Function to force decimal implicit conversion.
    * @param decimal
    * @return
    */
-  def dec(decimal: Double) = decimal
+  def dec(decimal: BigDecimal) = decimal
 
-  def euclidianDist(pairs: Seq[(Double, Double)]): Double =
-    dec(sqrt(pairs.foldLeft(dec(0))((input, pair) => input + pow(pair._1 - pair._2, 2))))
+  def euclidianDist(pairs: Seq[(BigDecimal, BigDecimal)]): BigDecimal =
+    dec(sqrt(pairs.foldLeft(dec(0))((input, pair) => input + dec(pow(pair._1.doubleValue() - pair._2.doubleValue(), 2))).doubleValue()))
 }

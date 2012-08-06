@@ -1,7 +1,6 @@
 package org.scahal.classifier
 
 import org.specs2.Specification
-import org.scahal.classifier.{Event, ContinuousFeature}
 import io.Source
 import scalala.tensor.dense.DenseMatrix
 import org.specs2.matcher.ThrownExpectations

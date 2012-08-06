@@ -3,7 +3,6 @@ package org.scahal.classifier
 import org.specs2.Specification
 import io.Source
 import org.scahal.math._
-import org.scahal.classifier._
 import org.specs2.matcher.ThrownExpectations
 
 /**

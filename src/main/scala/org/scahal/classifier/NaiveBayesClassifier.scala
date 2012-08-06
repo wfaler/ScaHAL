@@ -1,20 +1,21 @@
 package org.scahal.classifier
 
+import org.scahal.classifier._
 import org.scahal.math._
 import org.scahal.math.stats._
 
 object NaiveBayesClassifier {
   
-  def apply[T](events: Seq[Event[T]], outcomeProbabilities: Option[Map[T, Double]] = None): Seq[Feature] => List[Outcome[T]] =
+  def apply[T](events: Seq[Event[T]], outcomeProbabilities: Option[Map[T, BigDecimal]] = None): Seq[Feature] => List[Outcome[T]] =
     train(ModelBuilder(events), outcomeProbabilities)
 
-  def train[T](model: Map[T, FeatureMatrix], outcomeProbabilities: Option[Map[T, Double]] = None): Seq[Feature] => List[Outcome[T]] = {
+  def train[T](model: Map[T, FeatureMatrix], outcomeProbabilities: Option[Map[T, BigDecimal]] = None): Seq[Feature] => List[Outcome[T]] = {
     val outcomes = model.foldLeft((Map[T, Int]()))((map, outcomeMatrix) => map + (outcomeMatrix._1 -> outcomeMatrix._2.rows.size))
     val classifier = NaiveBayesClassifier[T](outcomes, model, outcomeProbs(outcomes, outcomeProbabilities))
     classifier.classify(_)
   }
 
-  private def outcomeProbs[T](outcomes: Map[T, Int], outcomeProbabilities: Option[Map[T, Double]]): Map[T, Double] = {
+  private def outcomeProbs[T](outcomes: Map[T, Int], outcomeProbabilities: Option[Map[T, BigDecimal]]): Map[T, BigDecimal] = {
     outcomeProbabilities.map(probs => {
       probs.foreach(v => outcomes.get(v._1).getOrElse(throw new IllegalStateException("Classifier has not had any training data for outcome " + v._1)))
       outcomes.foreach(v => probs.get(v._1).getOrElse(throw new IllegalStateException("Training data has a value that is not present in outcome probabilities: " + v._1)))
@@ -23,7 +24,7 @@ object NaiveBayesClassifier {
   }
 }
 
-case class NaiveBayesClassifier[T](outcomes: Map[T, Int], model: Map[T, FeatureMatrix], outcomeProbabilities: Map[T, Double]){
+case class NaiveBayesClassifier[T](outcomes: Map[T, Int], model: Map[T, FeatureMatrix], outcomeProbabilities: Map[T, BigDecimal]){
   private val categoricalColumns = model.keys.flatMap(model(_).columns).toSet.filter(_.cls.isAssignableFrom(classOf[CategoricalFeature[_]]))
   private val continuousColumns = model.keys.flatMap(model(_).columns).toSet.filter(_.cls.isAssignableFrom(classOf[ContinuousFeature]))
   private val featureCount = featureCounts(model)

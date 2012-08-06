@@ -6,7 +6,6 @@ import scalala.tensor.VectorCol
 
 import scalala.tensor.dense._
 import scalala.tensor.mutable._
-import org.scahal.classifier._
 
 /**
  * Created with IntelliJ IDEA.

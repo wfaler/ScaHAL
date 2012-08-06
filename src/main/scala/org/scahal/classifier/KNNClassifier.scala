@@ -11,7 +11,7 @@ import scala.math._
 case class KNNClassifier[T](events: Seq[Event[T]]) {
 
   def apply(features: Seq[Feature], kSize: Int): List[Outcome[T]] = {
-    val distances = events.foldLeft(List[(Double, Event[T])]())((input, event) => {
+    val distances = events.foldLeft(List[(BigDecimal, Event[T])]())((input, event) => {
       val pairs = event.features.map(feature => {
         feature match{
           case ContinuousFeature(name,value) => (value, features.
